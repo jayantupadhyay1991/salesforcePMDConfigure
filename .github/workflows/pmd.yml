@@ -19,7 +19,12 @@ jobs:
       - name: Get changed Apex classes
         id: changed-classes
         run: |
-          echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
+          if [[ $(git rev-list --count HEAD) -gt 1 ]]; then
+            echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
+          else
+            echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD | grep '.cls$')"
+          fi
+        shell: bash
       # start for adding report link as comment    
       - name: Apex static analysis
         run: |
