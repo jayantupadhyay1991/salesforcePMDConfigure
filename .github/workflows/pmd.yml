@@ -26,7 +26,7 @@ jobs:
       - name: Apex static analysis on changed classes
         if: ${{ steps.find_changed_files.outputs.changed_files != '' }}
         run: |
-          sfdx scanner run --target ${{ steps.find_changed_files.outputs.changed_files }} --pmdconfig "unpackaged/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
+          sfdx scanner run --target ""unpackaged/main/default/classes/" --pmdconfig "unpackaged/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
       
       # start for adding report link as comment    
       - name: Apex static analysis
