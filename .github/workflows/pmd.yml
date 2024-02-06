@@ -3,7 +3,7 @@ name: Run Scanner
 on:
   pull_request:
     paths:
-      - 'unpackaged/main/default/classes/**.cls' # Trigger only when Apex classes change
+      - 'PMDConfigureSFDC/force-app/main/default/classes/**.cls' # Trigger only when Apex classes change
   #push:
 
 jobs:
