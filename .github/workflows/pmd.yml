@@ -1,0 +1,31 @@
+name: Run Scanner
+
+on:
+  pull_request:
+  #push:
+
+jobs:
+  scan-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install SFDX CLI and Scanner
+        run: |
+          npm install sfdx-cli -g
+          sfdx plugins:install @salesforce/sfdx-scanner
+      # start for adding report link as comment    
+      - name: Apex static analysis
+        run: |
+            sfdx scanner run --target '/force-app/main/default/classes' --pmdconfig "/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
+          
+      - name: Upload PMD Report
+        uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+           name: scanner-output-${{ github.run_number }}.html
+           path: apexScanResults.html
+        
+      - name: Output artifact URL
+        run:  echo 'Artifact URL is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
