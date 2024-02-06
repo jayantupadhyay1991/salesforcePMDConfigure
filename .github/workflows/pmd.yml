@@ -16,9 +16,25 @@ jobs:
           npm install sfdx-cli -g
           sfdx plugins:install @salesforce/sfdx-scanner
           
-      - name: Apex static analysis
+      - name: Apex analysis on Changed 
         run: |
           sfdx scanner run --target "PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
+      
+      # CodeQL analysis
+      - name: Setup CodeQL
+        uses: github/codeql-action/init@v1
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+        with:
+          # Path to CodeQL database sources
+          languages: apex
+      # Upload CodeQL results
+      - name: Upload CodeQL Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-results-${{ github.run_number }}
+          path: .codeql/
       
       # start for adding report link as comment    
       - name: Apex static analysis
