@@ -15,12 +15,6 @@ jobs:
         run: |
           npm install sfdx-cli -g
           sfdx plugins:install @salesforce/sfdx-scanner
-      # Determine changed Apex classes
-      - name: Get changed Apex classes
-        id: changed-classes
-        run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep "/PMDConfigureSFDC/force-app/main/default/classes/")
-          echo "::set-output name=changed_files::$CHANGED_FILES"
           
       - name: Apex static analysis on changed classes
         run: |
