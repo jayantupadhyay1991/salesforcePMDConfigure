@@ -4,8 +4,8 @@ public with sharing class PMDTestClass {
       for(Account acc : accList){
         Account obj = new Account();
         obj.Id = acc.Id;
-        upsert obj;
-system.debug('test');
+        update obj;
+        system.debug('test');
       }
     }
   }
