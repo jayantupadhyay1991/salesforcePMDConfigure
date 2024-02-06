@@ -5,7 +5,7 @@ public with sharing class PMDTestClass {
         Account obj = new Account();
         obj.Id = acc.Id;
         update obj;
-        system.debug('test');
+        system.debug('test1');
       }
     }
   }
