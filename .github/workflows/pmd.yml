@@ -15,6 +15,11 @@ jobs:
         run: |
           npm install sfdx-cli -g
           sfdx plugins:install @salesforce/sfdx-scanner
+      # Determine changed Apex classes
+      - name: Get changed Apex classes
+        id: changed-classes
+        run: |
+          echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
       # start for adding report link as comment    
       - name: Apex static analysis
         run: |
