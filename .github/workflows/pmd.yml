@@ -16,9 +16,10 @@ jobs:
           npm install sfdx-cli -g
           sfdx plugins:install @salesforce/sfdx-scanner
       # Determine changed Apex classes
-      - name: Identify Changed Apex Classes
-        id: find_changed_files
+      - name: Get changed Apex classes
+        id: changed-classes
         run: |
+          echo "##[set-output name=changed_classes;]$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '.cls$')"
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'unpackaged/main/default/classes/*.cls')
           echo "::set-output name=changed_files::$CHANGED_FILES"
           
