@@ -5,6 +5,7 @@ public with sharing class PMDTestClass {
         Account obj = new Account();
         obj.Id = acc.Id;
         upsert obj;
+system.debug('test');
       }
     }
   }
