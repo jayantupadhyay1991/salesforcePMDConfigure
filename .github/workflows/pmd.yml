@@ -16,9 +16,9 @@ jobs:
           npm install sfdx-cli -g
           sfdx plugins:install @salesforce/sfdx-scanner
           
-      - name: Apex static analysis on changed classes
+      - name: Apex static analysis
         run: |
-          sfdx scanner run --target "/PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "/PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
+          sfdx scanner run --target "PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
       
       # start for adding report link as comment    
       - name: Apex static analysis
