@@ -50,12 +50,7 @@ jobs:
           CHANGED_CLASSES="${{ steps.read-changed-classes.outputs.changed-classes }}"
           echo "Changed classes: $CHANGED_CLASSES"
           sfdx scanner run --target "$CHANGED_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
-      # start for adding report link as comment    
-      - name: Apex static analysis on all Changed Apex classes in this PR
-        if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
-        run: |
-          sfdx scanner run --target "PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
-      
+     
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
         id: artifact-upload-step
