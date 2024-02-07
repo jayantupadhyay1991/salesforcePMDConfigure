@@ -21,13 +21,13 @@ jobs:
           sfdx plugins:install @salesforce/sfdx-scanner
       
       # Determine changed Apex classes
-      - name: Get changed Apex classes
+      - name: Get changed Apex classes 1
         id: changed-classes
         run: |
           echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
 
       # Determine changed Apex classes
-      - name: Get changed Apex classes
+      - name: Get changed Apex classes 2
         id: changed-classes-test-new
         run: |
           git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '.cls$' | tee changed_classes.txt
@@ -43,12 +43,18 @@ jobs:
         run: |
           CHANGED_CLASSES=$(cat changed_classes.txt)
           echo "::set-output name=changed-classes::$CHANGED_CLASSES"
-      
+
+      # Pass the changed class names as input to the target
+      - name: Execute target with changed class names
+        run: |
+          TARGET_CLASSES="${{ steps.read-changed-classes.outputs.changed-classes }}"
+          echo "Target classes: $TARGET_CLASSES"
+    
       # start for adding report link as comment    
       - name: Apex static analysis on all Changed Apex classes in this PR
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
         run: |
-          sfdx scanner run --target "${{ steps.read-changed-classes.outputs.changed-classes }}" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
+          sfdx scanner run --target "$TARGET_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
       
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
