@@ -53,17 +53,30 @@ jobs:
           done < changed_classes.txt
         
           # Merge all individual reports into a single file
-          cat temp_reports/*.html > apexScanResults.html
+          # cat temp_reports/*.html > apexScanResults.html
         
           # Clean up temporary directory
-          rm -rf temp_reports
+          # rm -rf temp_reports
       
-      - name: Upload PMD Report
-        uses: actions/upload-artifact@v4
+      - name: Upload PMD Reports
         id: artifact-upload-step
+        run: |
+          # Read the changed classes file and set the output
+          FILE_PATHS=$(cat changed_classes.txt)
+          echo "$FILE_PATHS" > artifact-paths.txt
+        shell: bash
+
+      - name: Set Artifact Paths
+        id: set-artifact-paths
+        run: |
+          cat artifact-paths.txt
+        shell: bash
+
+      - name: Upload PMD Reports
+        uses: actions/upload-artifact@v4
         with:
-           name: scanner-output-${{ github.run_number }}.html
-           path: apexScanResults.html
+          name: scanner-output-${{ github.run_number }}
+          path: ${{ steps.set-artifact-paths.outputs.stdout }}
         
       - name: Output artifact URL
         run:  echo 'Artifact URL is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
