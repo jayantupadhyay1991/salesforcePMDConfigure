@@ -86,10 +86,13 @@ jobs:
           done < changed_classes.txt
       
           # Merge all individual reports into a single file
-          cat temp_reports_sarif/*.sarif > apexScanResults.sarif
-        
+          # cat temp_reports_sarif/*.sarif > apexScanResults.sarif
+          # Concatenate all individual reports into a single file
+          for report_file in temp_reports_sarif/*.sarif; do
+            cat "$report_file" >> apexScanResults.sarif
+          done
           # Clean up temporary directory
-          rm -rf temp_reports
+          rm -rf temp_reports_sarif
           
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
