@@ -41,17 +41,18 @@ jobs:
       - name: Apex static analysis on all Changed Apex classes in this PR
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
         run: |
-        # Create a temporary directory to store individual reports
+          # Create a temporary directory to store individual reports
           mkdir -p temp_reports
+          # Iterate over each changed class
           while IFS= read -r file; do
               sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "temp_reports/${file%%.*}.html"
           done < changed_classes.txt
         
-        # Merge all individual reports into a single file
-        cat temp_reports/*.html > apexScanResults.html
+          # Merge all individual reports into a single file
+          cat temp_reports/*.html > apexScanResults.html
         
-        # Clean up temporary directory
-        rm -rf temp_reports
+          # Clean up temporary directory
+          rm -rf temp_reports
       
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
