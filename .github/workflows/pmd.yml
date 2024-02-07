@@ -73,9 +73,18 @@ jobs:
       - name: Apex static analysis
         run: |
           while IFS= read -r file; do
-            sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'apexScanResults.sarif'
+            # Extract the filename from the file path
+            filename=$(basename "$file")
+            # Run the scanner and save the report to a temporary file
+            sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'temp_reports/${filename%%.*}.sarif'
           done < changed_classes.txt
-
+      
+          # Merge all individual reports into a single file
+          cat temp_reports/*.sarif > apexScanResults.sarif
+        
+          # Clean up temporary directory
+          rm -rf temp_reports
+          
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
