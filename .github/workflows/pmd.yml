@@ -48,13 +48,15 @@ jobs:
       - name: Execute target with changed class names
         run: |
           TARGET_CLASSES="${{ steps.read-changed-classes.outputs.changed-classes }}"
-          echo "Target classes: $TARGET_CLASSES"
+          # Convert the comma-separated string to an array
+          IFS=',' read -r -a TARGET_CLASSES_ARRAY <<< "$TARGET_CLASSES"
+          echo "Target classes: ${TARGET_CLASSES_ARRAY[@]}"
     
       # start for adding report link as comment    
       - name: Apex static analysis on all Changed Apex classes in this PR
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
         run: |
-          sfdx scanner run --target "$TARGET_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
+          sfdx scanner run --target "${TARGET_CLASSES_ARRAY[@]" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
       
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
