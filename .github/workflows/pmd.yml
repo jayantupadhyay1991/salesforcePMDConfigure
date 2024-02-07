@@ -24,7 +24,18 @@ jobs:
       - name: Get changed Apex classes
         id: changed-classes
         run: |
-          echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"    
+          echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
+
+      # Determine changed Apex classes
+      - name: Get changed Apex classes test new
+        id: changed-classes-test-new
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '.cls$' | tee changed_classes.txt
+
+      # Print all changed classes
+      - name: Print all changed classes
+        run: |
+          cat changed_classes.txt
       
       # start for adding report link as comment    
       - name: Apex static analysis
