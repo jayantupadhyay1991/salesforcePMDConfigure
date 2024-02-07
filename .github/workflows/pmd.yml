@@ -41,7 +41,7 @@ jobs:
       - name: Read changed class names
         id: read-changed-classes
         run: |
-          CHANGED_CLASSES=$(cat changed_classes.txt)
+          CHANGED_CLASSES=$(cat changed_classes.txt | paste -sd "," -)
           echo "::set-output name=changed-classes::$CHANGED_CLASSES"
 
       # Pass the changed class names as input to the target
