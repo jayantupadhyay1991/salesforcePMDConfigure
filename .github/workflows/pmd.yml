@@ -53,11 +53,7 @@ jobs:
           done < changed_classes.txt
         
           # Merge all individual reports into a single file
-          # cat temp_reports/*.html > apexScanResults.html
-          # Concatenate all individual reports into a single file
-          for report_file in temp_reports/*.html; do
-            cat "$report_file" >> apexScanResults.html
-          done
+          cat temp_reports/*.html > apexScanResults.html
         
           # Clean up temporary directory
           rm -rf temp_reports
