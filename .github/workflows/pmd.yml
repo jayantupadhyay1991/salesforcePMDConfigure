@@ -43,7 +43,7 @@ jobs:
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
         run: |
           while IFS= read -r file; do
-              sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
+              sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html' --append
           done < changed_classes.txt
       
       - name: Upload PMD Report
@@ -61,7 +61,7 @@ jobs:
       - name: Apex static analysis
         run: |
           while IFS= read -r file; do
-            sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'apexScanResults.sarif'
+            sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'apexScanResults.sarif' --append
           done < changed_classes.txt
 
       - name: Upload SARIF file
