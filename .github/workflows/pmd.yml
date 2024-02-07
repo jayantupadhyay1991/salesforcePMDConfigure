@@ -37,47 +37,25 @@ jobs:
         run: |
           cat changed_classes.txt
       
+      # Read the changed class names into a variable
+      - name: Read changed class names
+        id: read-changed-classes
+        run: |
+          CHANGED_CLASSES=$(cat changed_classes.txt)
+          echo "::set-output name=changed-classes::$CHANGED_CLASSES"
+      
       # start for adding report link as comment    
       - name: Apex static analysis on all Changed Apex classes in this PR
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
         run: |
-          # Create a temporary directory to store individual reports
-          mkdir -p temp_reports
-          
-          # Iterate over each changed class
-          while IFS= read -r file; do
-            # Extract the filename from the file path
-            filename=$(basename "$file")
-              # Run the scanner and save the report to a temporary file
-              sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "temp_reports/${filename%%.*}.html"
-          done < changed_classes.txt
-        
-          # Merge all individual reports into a single file
-          # cat temp_reports/*.html > apexScanResults.html
-        
-          # Clean up temporary directory
-          # rm -rf temp_reports
+          sfdx scanner run --target "${{ steps.read-changed-classes.outputs.changed-classes }}" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
       
-      - name: Upload PMD Reports
-        id: artifact-upload-step
-        run: |
-          # Read the changed classes file and set the output
-          FILE_PATHS=$(cat changed_classes.txt)
-          echo "$FILE_PATHS" > artifact-paths.txt
-        shell: bash
-
-      - name: Set Artifact Paths
-        id: set-artifact-paths
-        run: |
-          cat artifact-paths.txt
-        shell: bash
-
-      - name: Upload PMD Reports
+      - name: Upload PMD Report
         uses: actions/upload-artifact@v4
+        id: artifact-upload-step
         with:
-          name: scanner-output-${{ github.run_number }}
-          path: ${{ steps.set-artifact-paths.outputs.stdout }}
+           name: scanner-output-${{ github.run_number }}.html
+           path: apexScanResults.html
         
       - name: Output artifact URL
         run:  echo 'Artifact URL is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
-        
