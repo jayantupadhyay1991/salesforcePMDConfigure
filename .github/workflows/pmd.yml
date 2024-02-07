@@ -32,7 +32,6 @@ jobs:
         run: |
           git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '.cls$' | tee changed_classes.txt
 
-
       # Print all changed classes
       - name: Print all changed classes
         run: |
