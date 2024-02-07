@@ -47,16 +47,15 @@ jobs:
       # Pass the changed class names as input to the target
       - name: Execute target with changed class names
         run: |
-          TARGET_CLASSES="${{ steps.read-changed-classes.outputs.changed-classes }}"
           TARGET_CLASSES="${TARGET_CLASSES_ARRAY[@]}"
-          echo "Command to execute: sfdx scanner run --target \"$TARGET_CLASSES\" --pmdconfig \"PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml\" -f html --outfile \"apexScanResults.html\""
-          sfdx scanner run --target "$TARGET_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
+          echo "Command to execute: sfdx scanner run -t \"$TARGET_CLASSES\" --pmdconfig \"PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml\" -f html --outfile \"apexScanResults.html\""
+          sfdx scanner run -t "$TARGET_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
     
       # start for adding report link as comment    
       - name: Apex static analysis on all Changed Apex classes in this PR
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
-        run: |
-          sfdx scanner run --target "PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
+       # run: |
+        #  sfdx scanner run --target "PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
       
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
