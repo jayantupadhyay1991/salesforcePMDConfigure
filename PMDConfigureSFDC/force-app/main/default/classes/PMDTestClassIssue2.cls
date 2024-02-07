@@ -8,7 +8,7 @@ public with sharing class PMDTestClassIssue2 {
     for(Account acc : accList){
       Account obj = new Account();
       obj.Id = acc.Id;
-      upsert obj;
+      update obj;
     }
   }
   }
