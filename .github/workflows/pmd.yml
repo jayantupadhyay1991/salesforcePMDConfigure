@@ -43,9 +43,13 @@ jobs:
         run: |
           # Create a temporary directory to store individual reports
           mkdir -p temp_reports
+          
           # Iterate over each changed class
           while IFS= read -r file; do
-              sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "temp_reports/${file%%.*}.html"
+            # Extract the filename from the file path
+            filename=$(basename "$file")
+              # Run the scanner and save the report to a temporary file
+              sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "temp_reports/${filename%%.*}.html"
           done < changed_classes.txt
         
           # Merge all individual reports into a single file
