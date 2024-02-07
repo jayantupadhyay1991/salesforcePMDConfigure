@@ -76,7 +76,7 @@ jobs:
             # Extract the filename from the file path
             filename=$(basename "$file")
             # Run the scanner and save the report to a temporary file
-            sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'temp_reports/${filename%%.*}.sarif'
+            sfdx scanner run --target "$file" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile "temp_reports/${filename%%.*}.sarif"
           done < changed_classes.txt
       
           # Merge all individual reports into a single file
