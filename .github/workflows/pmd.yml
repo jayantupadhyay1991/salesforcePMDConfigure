@@ -2,45 +2,55 @@ name: Run Scanner
 
 on:
   pull_request:
+    paths:
+      - 'PMDConfigureSFDC/force-app/main/default/classes/**.cls' # Trigger only when Apex classes change
   #push:
 
 jobs:
   scan-files:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout with full history
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full commit history is fetched
 
       - name: Install SFDX CLI and Scanner
         run: |
           npm install sfdx-cli -g
           sfdx plugins:install @salesforce/sfdx-scanner
-          
-      - name: Apex analysis on Changed 
-        run: |
-          sfdx scanner run --target "PMDConfigureSFDC/force-app/main/default/classes/" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
       
-      # CodeQL analysis
-      - name: Setup CodeQL
-        uses: github/codeql-action/init@v1
+      # Determine changed Apex classes
+      - name: Get changed Apex classes 1
+        id: changed-classes
+        run: |
+          echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
 
-      - name: Run CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
-        with:
-          # Path to CodeQL database sources
-          languages: apex
-      # Upload CodeQL results
-      - name: Upload CodeQL Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: codeql-results-${{ github.run_number }}
-          path: .codeql/
-      
-      # start for adding report link as comment    
-      - name: Apex static analysis
+      # Determine changed Apex classes
+      - name: Get changed Apex classes 2
+        id: changed-classes-test-new
         run: |
-            sfdx scanner run --target 'PMDConfigureSFDC/force-app/main/default/classes/' --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
-          
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '.cls$' | tee changed_classes.txt
+
+      # Print all changed classes
+      - name: Print all changed classes
+        run: |
+          cat changed_classes.txt
+      
+      # Read the changed class names into a variable
+      - name: Read changed class names
+        id: read-changed-classes
+        run: |
+          CHANGED_CLASSES=$(cat changed_classes.txt | paste -sd "," -)
+          echo "::set-output name=changed-classes::$CHANGED_CLASSES"
+
+      # Pass the changed class names as input to the target
+      - name: Execute target with changed class names
+        run: |
+          CHANGED_CLASSES="${{ steps.read-changed-classes.outputs.changed-classes }}"
+          echo "Changed classes: $CHANGED_CLASSES"
+          sfdx scanner run --target "$CHANGED_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
+     
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
         id: artifact-upload-step
