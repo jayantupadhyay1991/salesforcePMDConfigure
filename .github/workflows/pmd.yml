@@ -50,6 +50,7 @@ jobs:
           CHANGED_CLASSES="${{ steps.read-changed-classes.outputs.changed-classes }}"
           echo "Changed classes: $CHANGED_CLASSES"
           sfdx scanner run --target "$CHANGED_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile "apexScanResults.html"
+          sfdx scanner run --target "$CHANGED_CLASSES" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile "apexScanResults.sarif"
      
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
@@ -60,3 +61,9 @@ jobs:
         
       - name: Output artifact URL
         run:  echo 'Artifact URL is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: apexScanResults.sarif
+       # end for using github code scan feature with sfdx
