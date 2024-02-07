@@ -42,7 +42,7 @@ jobs:
       - name: Apex static analysis on all Changed Apex classes in this PR
         if: ${{ steps.changed-classes.outputs.changed_classes != '' }} # Run only if changed classes exist
         run: |
-            sfdx scanner run --target "$(cat changed_classes.txt)" --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
+            sfdx scanner run --target '$(cat changed_classes.txt)' --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f html --outfile 'apexScanResults.html'
       
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
@@ -58,7 +58,7 @@ jobs:
       # start for using github code scan feature with sfdx
       - name: Apex static analysis
         run: |
-          sfdx scanner run --target '${{ steps.changed-classes.outputs.changed_classes }}' --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'apexScanResults.sarif'
+          sfdx scanner run --target '$(cat changed_classes.txt)' --pmdconfig "PMDConfigureSFDC/force-app/main/default/pmd/pmdrules.xml" -f sarif --outfile 'apexScanResults.sarif'
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
