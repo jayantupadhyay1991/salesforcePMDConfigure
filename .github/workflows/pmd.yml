@@ -27,10 +27,11 @@ jobs:
           echo "##[set-output name=changed_classes;]$(git diff --name-only HEAD^ HEAD | grep '.cls$')"
 
       # Determine changed Apex classes
-      - name: Get changed Apex classes test new
+      - name: Get changed Apex classes
         id: changed-classes-test-new
         run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '.cls$' | tee changed_classes.txt
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '.cls$' | tee changed_classes.txt
+
 
       # Print all changed classes
       - name: Print all changed classes
